@@ -1,0 +1,12 @@
+{
+  "version": "0.2",
+  "date": "2026-10-13",
+  "removed": "CAKE",
+  "added": "INJ",
+  "base_date": "2026-10-13",
+  "index_base": 1000,
+  "timing": "基日当天研究名单修订，基期重新等权；未上线实时发布",
+  "original_archive_sha256": "3960575f92aa0ed42bcb791441ce4bf7c0b60044b6fa797c460adacf2963b4a3",
+  "unchanged_members": 29,
+  "JTO_included": false
+}

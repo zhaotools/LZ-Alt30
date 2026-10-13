@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#091521">
+    <meta name="description" content="LZ-Alt30 老赵基本面山寨指数：30 个项目的等权价格观察指数，公开展示正式日度点位、成分结构、历史研究参考与计算方法。">
+    <title>LZ-Alt30 · 老赵基本面山寨指数</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="stylesheet" href="./styles.css">
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <div class="page-glow page-glow-a" aria-hidden="true"></div>
+    <div class="page-glow page-glow-b" aria-hidden="true"></div>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="#top" aria-label="LZ-Alt30 首页">
+          <span class="brand-mark" aria-hidden="true"><span>LZ</span><small>30</small></span>
+          <span class="brand-name">LZ-Alt30 <em>研究版</em></span>
+        </a>
+        <nav aria-label="页面导航">
+          <a href="#index">正式指数</a>
+          <a href="#reference">历史参考</a>
+          <a href="#members">30 个成分</a>
+          <a href="#method">方法与来源</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top" class="shell">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> LAO ZHAO MARKET OBSERVATION <span class="edition">V0.2 · INJ</span></p>
+          <h1 id="hero-title">给山寨市场，<br><span>一个有边界的刻度。</span></h1>
+          <p class="hero-lead">从 BTC 之外选择 30 个有可识别业务或网络用途的资产，以等权起步，持续观察它们的整体价格方向。</p>
+          <div class="hero-actions">
+            <a class="primary-action" href="#index">查看正式指数 <span aria-hidden="true">↗</span></a>
+            <a class="text-action" href="#method">了解计算方法 <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+        <div class="hero-graphic" aria-hidden="true">
+          <div class="orbit orbit-outer"></div><div class="orbit orbit-middle"></div><div class="orbit orbit-inner"></div>
+          <div class="orbit-core"><span>LZ</span><strong>ALT<em>30</em></strong></div>
+          <div class="orbit-tag orbit-tag-one">30 ASSETS</div>
+          <div class="orbit-tag orbit-tag-two">6 SECTORS</div>
+          <div class="orbit-tag orbit-tag-three">USD · DAILY</div>
+        </div>
+      </section>
+
+      <section id="index" class="section index-section" aria-labelledby="index-title">
+        <div class="section-head">
+          <div><p class="section-kicker">01 / OFFICIAL INDEX</p><h2 id="index-title">正式指数</h2></div>
+          <p class="section-note">从 2026-10-13 起正式记录 · 基点 1000</p>
+        </div>
+        <div class="index-grid">
+          <div class="index-primary panel">
+            <div class="panel-topline"><span class="panel-label">LZ-Alt30 / USD 现货</span><span id="data-status" class="status-pill">读取数据中</span></div>
+            <div class="index-number" id="official-value">—</div>
+            <div class="index-change" id="official-change">读取数据中</div>
+            <div class="index-divider"></div>
+            <div class="index-meta">
+              <div><span>采样日期</span><strong id="sample-date">—</strong></div>
+              <div><span>报价时间</span><strong>UTC 00:00 附近</strong></div>
+              <div><span>下一次恢复等权</span><strong id="rebalance-date">—</strong></div>
+            </div>
+          </div>
+          <div class="index-chart panel">
+            <div class="panel-heading"><div><h3>正式指数轨迹</h3><p>仅记录基日之后的日度价格指数</p></div><span class="chart-dot"></span></div>
+            <div class="chart-holder"><svg id="official-chart" class="chart" viewBox="0 0 900 300" role="img" aria-label="LZ-Alt30 正式指数日度走势图"></svg><div id="official-tooltip" class="chart-tooltip" hidden></div></div>
+            <p id="official-chart-note" class="chart-foot">正式数据从基日开始积累。</p>
+          </div>
+        </div>
+        <div class="inline-note"><span class="note-icon">i</span><p>这是价格观察指数，未计入质押、空投、借贷收益、资金费或交易成本；它不代表可直接成交的投资组合。</p></div>
+      </section>
+
+      <section id="reference" class="section reference-section" aria-labelledby="reference-title">
+        <div class="section-head">
+          <div><p class="section-kicker">02 / RESEARCH WINDOW</p><h2 id="reference-title">历史参考</h2></div>
+          <span class="research-badge">当前名单回推模拟</span>
+        </div>
+        <div class="reference-warning"><span aria-hidden="true">◎</span><p><strong>这段曲线不是正式指数的历史业绩。</strong>它把 2026-10-13 的 30 个成分放回过去，存在名单选择、幸存者和前视偏差；正式指数从基日 1000 点单独起算。</p></div>
+        <div class="reference-card panel">
+          <div class="reference-top">
+            <div><p class="reference-range">2025-10-14 — 2026-10-13</p><h3>365 天同起点对照</h3><p>Alt30、BTC 与 ETH 均从 1000 起步，仅对照现货价格。</p></div>
+            <div id="reference-legend" class="chart-legend" aria-label="曲线显隐控制"></div>
+          </div>
+          <div class="reference-chart-holder chart-holder"><svg id="reference-chart" class="chart" viewBox="0 0 900 330" role="img" aria-label="LZ-Alt30 历史参考与 BTC、ETH 对照走势图"></svg><div id="reference-tooltip" class="chart-tooltip" hidden></div></div>
+          <div id="reference-stats" class="reference-stats"></div>
+          <p class="source-caption">按附件中的日度邻近报价计算；季度仅恢复等权，没有事后换币。历史参考窗口在正式基日结束。</p>
+        </div>
+      </section>
+
+      <section id="members" class="section members-section" aria-labelledby="members-title">
+        <div class="section-head"><div><p class="section-kicker">03 / THE BASKET</p><h2 id="members-title">30 个成分，6 个方向</h2></div><p class="section-note">19 个优先候选 · 11 个条件候选</p></div>
+        <div id="sector-grid" class="sector-grid"></div>
+        <div class="members-panel panel">
+          <div class="members-toolbar"><div><h3>成分明细</h3><p>区间内持币数量固定，实际权重随价格变化</p></div><div id="sector-filters" class="filter-list" aria-label="赛道筛选"></div></div>
+          <div class="table-scroll"><table class="members-table"><thead><tr><th scope="col">资产</th><th scope="col">赛道</th><th scope="col">候选</th><th scope="col" class="numeric">价格 / USD</th><th scope="col" class="numeric">较前次采样</th><th scope="col" class="numeric">当前权重</th><th scope="col" class="numeric">目标权重</th></tr></thead><tbody id="members-body"><tr><td colspan="7">读取数据中…</td></tr></tbody></table></div>
+          <p class="table-caption">成分价格变化仅比较两次日度采样；候选分类是人工研究判断，不是买入评级。点击资产可查看业务依据与风险。</p>
+          <div id="member-detail" class="member-detail" hidden></div>
+        </div>
+      </section>
+
+      <section id="method" class="section method-section" aria-labelledby="method-title">
+        <div class="section-head"><div><p class="section-kicker">04 / METHODOLOGY</p><h2 id="method-title">规则公开，边界清楚</h2></div><a class="source-link" href="https://github.com/zhaotools/LZ-Alt30/blob/main/research/%E6%8C%87%E6%95%B0%E8%AF%B4%E6%98%8E%E4%B8%8E%E9%80%89%E5%B8%81%E5%88%86%E6%9E%90.md" target="_blank" rel="noopener noreferrer">阅读完整研究说明 ↗</a></div>
+        <div class="method-grid">
+          <article class="method-card panel"><span class="method-number">01</span><h3>从 1000 点出发</h3><p>2026-10-13 按每个成分 1/30 的目标权重初始化虚拟持仓。此前的模拟曲线另列展示。</p></article>
+          <article class="method-card panel"><span class="method-number">02</span><h3>每天采样一次</h3><p>取 UTC 零点附近的 USD 现货报价。缺失、非正价格或报价时间不合格时暂停当日发布。</p></article>
+          <article class="method-card panel"><span class="method-number">03</span><h3>季度恢复等权</h3><p>每季首日先按旧持仓计算点位，再按该点位恢复每项 1/30，确保调整前后指数连续。</p></article>
+          <article class="method-card panel"><span class="method-number">04</span><h3>名单人工复审</h3><p>成分审查与日常取价分开。任何新增、剔除或紧急暂停都应公告并保留版本记录。</p></article>
+        </div>
+        <div class="method-bottom"><div><h3>数据来源与更新时间</h3><p>价格来自 <a href="https://defillama.com/" target="_blank" rel="noopener noreferrer">DefiLlama Coins API</a>，成分与研究说明来自 2026-10-13 的 INJ 版附件。页面公开最近一次有效采样日期；研究结论不会随价格自动更新。</p></div><div><h3>阅读提醒</h3><p>等权价格走势不等于全体山寨币市场，也不证明成分的估值合理。30 个项目之间可能存在较强的共同风险，尤其是 ETH、Solana 与 DeFi 相关敞口。</p></div></div>
+      </section>
+    </main>
+    <footer class="site-footer"><div class="shell footer-inner"><div><strong>LZ-Alt30</strong><span>老赵基本面山寨指数 · 研究版 v0.2（INJ）</span></div><div><a href="https://github.com/zhaotools/LZ-Alt30" target="_blank" rel="noopener noreferrer">GitHub 源码 ↗</a><span>仅供研究观察，不构成投资建议。</span></div></div></footer>
+  </body>
+</html>
