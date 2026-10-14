@@ -115,7 +115,6 @@ def build():
         "meta": {
             "name": "LZ-Alt30",
             "full_name": "老赵基本面山寨指数",
-            "version": "v0.2 · INJ版",
             "base_date": BASE_DATE,
             "base_value": BASE_VALUE,
             "latest_date": latest_date,
