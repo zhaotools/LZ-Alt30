@@ -1,7 +1,7 @@
 "use strict";
 
 const COLORS = {alt30: "#7c3aed", btc: "#d97706", eth: "#2563b8"};
-const SECTOR_COLORS = ["#367bc4", "#2694a4", "#6d90c0", "#b4894f", "#9478b7", "#57a38d"];
+const SECTOR_COLORS = ["#367bc4", "#2694a4", "#6d90c0", "#b4894f", "#9478b7", "#57a38d", "#7c70ad"];
 const svgNS = "http://www.w3.org/2000/svg";
 let state = null;
 let activeSector = "全部";

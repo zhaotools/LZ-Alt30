@@ -6,7 +6,7 @@ import json
 import math
 from pathlib import Path
 
-from calculate_index import BASE_DATE, BASE_VALUE, calculate
+from calculate_index import BASE_DATE, BASE_VALUE, active_ids, calculate_with_state, required_ids
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,24 +19,37 @@ def read_csv(path):
         return list(csv.DictReader(stream))
 
 
+def read_ledger(name):
+    return read_csv(DATA / name) + read_csv(DATA / name.replace(".csv", "_additions.csv"))
+
+
 def build():
     members = json.loads((DATA / "constituents.json").read_text(encoding="utf-8"))
     ids = [item[0] for item in members]
     if len(ids) != 30 or len(set(ids)) != 30:
         raise ValueError("Expected 30 unique constituents")
 
-    prices = read_csv(DATA / "daily_prices.csv")
-    values = calculate(prices, ids)
+    changes = json.loads((DATA / "constituent_changes.json").read_text(encoding="utf-8"))
+    skipped = json.loads((DATA / "skipped_dates.json").read_text(encoding="utf-8"))
+    prices = read_ledger("daily_prices.csv")
+    values, quantities = calculate_with_state(prices, ids, changes, [item["date"] for item in skipped])
     by_date = {row["date"]: row for row in prices}
     base = by_date[BASE_DATE]
     latest = prices[-1]
     prior = prices[-2] if len(prices) > 1 else None
     latest_date = latest["date"]
+    current_ids = active_ids(ids, changes, latest_date)
+    current_members = list(members)
+    for change in changes:
+        if change["effective_date"] <= latest_date:
+            index = next(index for index, member in enumerate(current_members) if member[0] == change["removed_id"])
+            current_members[index] = change["added"]
 
-    quote_rows = read_csv(DATA / "quote_times.csv")
+    quote_rows = read_ledger("quote_times.csv")
     latest_quotes = [row for row in quote_rows if row["采样日期"] == latest_date]
-    if len(latest_quotes) != 31 or {row["CoinGecko_ID"] for row in latest_quotes} != set(ids + ["bitcoin"]):
-        raise ValueError("Latest quote provenance does not cover all 31 assets")
+    expected_quotes = set(required_ids(ids, changes, latest_date))
+    if len(latest_quotes) != len(expected_quotes) or {row["CoinGecko_ID"] for row in latest_quotes} != expected_quotes:
+        raise ValueError("Latest quote provenance does not cover all required assets")
     max_quote_offset = max(abs(int(row["实际报价与UTC零点差_秒"])) for row in latest_quotes)
     if max_quote_offset > 900:
         raise ValueError("Latest quote exceeds the 15 minute sampling tolerance")
@@ -68,25 +81,17 @@ def build():
         if row["date"] <= BASE_DATE
     ]
 
-    quantities = {coin_id: BASE_VALUE / len(ids) / float(base[coin_id]) for coin_id in ids}
-    for row in prices:
-        if row["date"] <= BASE_DATE:
-            continue
-        day = dt.date.fromisoformat(row["date"])
-        point = sum(quantities[coin_id] * float(row[coin_id]) for coin_id in ids)
-        if day.day == 1 and day.month in (1, 4, 7, 10):
-            quantities = {coin_id: point / len(ids) / float(row[coin_id]) for coin_id in ids}
     last_value = official[-1]["value"]
-    exact_value = sum(quantities[coin_id] * float(latest[coin_id]) for coin_id in ids)
+    exact_value = sum(quantities[coin_id] * float(latest[coin_id]) for coin_id in current_ids)
     if not math.isclose(last_value, exact_value, rel_tol=0, abs_tol=0.000001):
         raise ValueError("Displayed official value differs from current holdings")
 
     sectors = {}
     constituents = []
-    for coin_id, symbol, sector, priority, business, mechanism, risk, source in members:
+    for coin_id, symbol, sector, priority, business, mechanism, risk, source in current_members:
         price = float(latest[coin_id])
         weight = quantities[coin_id] * price / exact_value
-        previous_price = float(prior[coin_id]) if prior else None
+        previous_price = float(prior[coin_id]) if prior and prior.get(coin_id) else None
         change = (price / previous_price - 1) * 100 if previous_price else None
         constituents.append(
             {
@@ -123,6 +128,8 @@ def build():
             "next_rebalance_date": next_rebalance_date(latest_date),
             "reference_start": reference[0]["date"],
             "reference_end": BASE_DATE,
+            "constituent_changes": [{"effective_date": item["effective_date"], "removed": "AKT", "added": item["added"][1]} for item in changes if item["effective_date"] <= latest_date],
+            "skipped_dates": skipped,
         },
         "official": official,
         "reference": reference,

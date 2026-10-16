@@ -1,0 +1,16 @@
+[
+  {
+    "effective_date": "2026-10-16",
+    "removed_id": "akash-network",
+    "added": [
+      "zcash",
+      "ZEC",
+      "隐私支付",
+      "条件",
+      "可选择透明或屏蔽地址的加密货币支付网络",
+      "ZEC 用于网络转账与矿工奖励；隐私交易功能依赖实际采用",
+      "隐私监管、交易所支持、实际支付使用及矿工抛压",
+      "https://zcash.readthedocs.io/en/latest/rtd_pages/addresses.html"
+    ]
+  }
+]

@@ -12,12 +12,12 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from build_site import DATA, ROOT, build, read_csv
-from calculate_index import BASE_DATE, calculate
+from build_site import DATA, ROOT, build, read_csv, read_ledger
+from calculate_index import BASE_DATE, calculate, required_ids
 
 
-PRICE_FILE = DATA / "daily_prices.csv"
-QUOTE_FILE = DATA / "quote_times.csv"
+PRICE_FILE = DATA / "daily_prices_additions.csv"
+QUOTE_FILE = DATA / "quote_times_additions.csv"
 QUOTE_FIELDS = ["采样日期", "CoinGecko_ID", "实际报价UTC", "价格_USD", "实际报价与UTC零点差_秒"]
 MAX_OFFSET_SECONDS = 900
 
@@ -87,10 +87,13 @@ def write_csv_atomically(path, rows, fields):
 def update(target_date):
     members = json.loads((DATA / "constituents.json").read_text(encoding="utf-8"))
     ids = [member[0] for member in members]
-    all_ids = ids + ["bitcoin"]
-    rows = read_csv(PRICE_FILE)
-    quotes = read_csv(QUOTE_FILE)
-    calculate(rows, ids)
+    changes = json.loads((DATA / "constituent_changes.json").read_text(encoding="utf-8"))
+    skipped = json.loads((DATA / "skipped_dates.json").read_text(encoding="utf-8"))
+    skipped_dates = {item["date"] for item in skipped}
+    all_ids = list(dict.fromkeys(ids + [item["added"][0] for item in changes] + ["bitcoin"]))
+    rows = read_ledger("daily_prices.csv")
+    quotes = read_ledger("quote_times.csv")
+    calculate(rows, ids, changes=changes, skipped_dates=skipped_dates)
     last = dt.date.fromisoformat(rows[-1]["date"])
     if last < dt.date.fromisoformat(BASE_DATE):
         raise ValueError("Price ledger does not contain the official base date")
@@ -105,14 +108,18 @@ def update(target_date):
     new_quotes = []
     for offset in range(1, (target_date - last).days + 1):
         date = last + dt.timedelta(days=offset)
-        price_row, quote_rows = fetch_sample(date, all_ids)
+        if date.isoformat() in skipped_dates:
+            print(f"Skipped documented invalid sample {date}")
+            continue
+        requested_ids = required_ids(ids, changes, date.isoformat())
+        price_row, quote_rows = fetch_sample(date, requested_ids)
         new_rows.append(price_row)
         new_quotes.extend(quote_rows)
-        print(f"Validated {date}: 31 prices, max offset {max(abs(int(r['实际报价与UTC零点差_秒'])) for r in quote_rows)}s")
+        print(f"Validated {date}: {len(requested_ids)} prices, max offset {max(abs(int(r['实际报价与UTC零点差_秒'])) for r in quote_rows)}s")
 
-    calculate(rows + new_rows, ids)
-    write_csv_atomically(PRICE_FILE, rows + new_rows, ["date"] + all_ids)
-    write_csv_atomically(QUOTE_FILE, quotes + new_quotes, QUOTE_FIELDS)
+    calculate(rows + new_rows, ids, changes=changes, skipped_dates=skipped_dates)
+    write_csv_atomically(PRICE_FILE, read_csv(PRICE_FILE) + new_rows, ["date"] + all_ids)
+    write_csv_atomically(QUOTE_FILE, read_csv(QUOTE_FILE) + new_quotes, QUOTE_FIELDS)
     build()
     return len(new_rows)
 

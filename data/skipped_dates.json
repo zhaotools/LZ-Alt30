@@ -1,0 +1,6 @@
+[
+  {
+    "date": "2026-10-14",
+    "reason": "SKY quote timestamp was 1083 seconds before 00:00 UTC, exceeding the 900-second limit; no official sample published"
+  }
+]
