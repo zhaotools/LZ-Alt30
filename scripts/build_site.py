@@ -81,6 +81,23 @@ def build():
         if row["date"] <= BASE_DATE
     ]
 
+    # Keep the published reference window intact. For the visual comparison,
+    # chain each official series to its reference value at the base date.
+    # This preserves the common 2025-10-14 starting point without presenting
+    # retrospective levels as official index history.
+    if reference[-1]["date"] != official[0]["date"] or official[0]["value"] != BASE_VALUE:
+        raise ValueError("Reference and official series do not meet at the base date")
+    comparison = [dict(point, phase="reference") for point in reference]
+    anchors = reference[-1]
+    for point in official[1:]:
+        comparison.append({
+            "date": point["date"],
+            "alt30": round(anchors["alt30"] * point["value"] / BASE_VALUE, 6),
+            "btc": round(anchors["btc"] * point["btc"] / BASE_VALUE, 6),
+            "eth": round(anchors["eth"] * point["eth"] / BASE_VALUE, 6),
+            "phase": "official",
+        })
+
     last_value = official[-1]["value"]
     exact_value = sum(quantities[coin_id] * float(latest[coin_id]) for coin_id in current_ids)
     if not math.isclose(last_value, exact_value, rel_tol=0, abs_tol=0.000001):
@@ -133,6 +150,7 @@ def build():
         },
         "official": official,
         "reference": reference,
+        "comparison": comparison,
         "sectors": list(sectors.values()),
         "constituents": constituents,
     }

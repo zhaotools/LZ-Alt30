@@ -68,6 +68,14 @@ class IndexTests(unittest.TestCase):
         self.assertEqual(len(result["official"]), len(read_ledger("daily_prices.csv")) - 364)
         self.assertEqual(len(result["reference"]), 365)
         self.assertEqual(result["reference"][-1]["date"], BASE_DATE)
+        self.assertEqual(len(result["comparison"]), len(result["reference"]) + len(result["official"]) - 1)
+        self.assertEqual(result["comparison"][364]["phase"], "reference")
+        self.assertEqual(result["comparison"][-1]["phase"], "official")
+        self.assertEqual(result["comparison"][-1]["date"], result["meta"]["latest_date"])
+        for key, official_key in (("alt30", "value"), ("btc", "btc"), ("eth", "eth")):
+            self.assertEqual(result["comparison"][364][key], result["reference"][-1][key])
+            expected = result["reference"][-1][key] * result["official"][-1][official_key] / 1000
+            self.assertAlmostEqual(result["comparison"][-1][key], expected, places=5)
         self.assertEqual(result["official"][0]["value"], 1000)
         self.assertEqual(len(result["constituents"]), 30)
         self.assertAlmostEqual(sum(item["current_weight_pct"] for item in result["constituents"]), 100, places=3)

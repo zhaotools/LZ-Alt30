@@ -149,8 +149,10 @@ body{background:radial-gradient(circle at 88% 5%,#e8f3fc 0,transparent 31%),radi
 .chart .baseline{stroke:#8fa8bb}
 .chart .chart-point{stroke:#fff}
 .chart .hover-line{stroke:#8098aa}
+.chart .phase-divider{stroke:#b38b55;stroke-width:1.5;stroke-dasharray:5 5;opacity:.9}
 .chart-tooltip{border-color:#c8d9e6;background:rgba(255,255,255,.98);box-shadow:0 12px 27px rgba(42,77,108,.16);color:var(--text)}
 .chart-tooltip span{color:#536d80}
+.chart-tooltip .tooltip-phase{color:#966429;font-weight:650}
 .note-icon{border-color:#abc7d8;color:#447e9e}
 .research-badge{border-color:#ead3ad;background:#fff6e7;color:#926020}
 .reference-warning{border-color:#ead7b9;background:#fff9ef;color:#765d3d}

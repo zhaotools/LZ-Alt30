@@ -21,7 +21,7 @@
         </a>
         <nav aria-label="页面导航">
           <a href="#index">正式指数</a>
-          <a href="#reference">历史参考</a>
+          <a href="#reference">三项价格对照</a>
           <a href="#members">30 个成分</a>
           <a href="#method">方法与来源</a>
         </nav>
@@ -77,18 +77,18 @@
 
       <section id="reference" class="section reference-section" aria-labelledby="reference-title">
         <div class="section-head">
-          <div><p class="section-kicker">02 / RESEARCH WINDOW</p><h2 id="reference-title">历史参考</h2></div>
-          <span class="research-badge">基日名单回推模拟</span>
+          <div><p class="section-kicker">02 / PRICE COMPARISON</p><h2 id="reference-title">LZ-Alt30 · BTC · ETH 对照</h2></div>
+          <span class="research-badge">历史参考 + 正式续接</span>
         </div>
-        <div class="reference-warning"><span aria-hidden="true">◎</span><p><strong>这段曲线不是正式指数的历史业绩。</strong>它把 2026-10-13 的 30 个成分放回过去，存在名单选择、幸存者和前视偏差；正式指数从基日 1000 点单独起算。</p></div>
+        <div class="reference-warning"><span aria-hidden="true">◎</span><p><strong>2026-10-13 以前是历史回推，之后是正式采样。</strong>竖线标出生效分界；为保持三条曲线从 2025-10-14 同起点对照，正式阶段按各自在基日的参考值同比例续接。图中数值是对照值，正式指数点位见上方。</p></div>
         <div class="reference-card panel">
           <div class="reference-top">
-            <div><p class="reference-range">2025-10-14 — 2026-10-13</p><h3>365 天同起点对照</h3><p>Alt30、BTC 与 ETH 均从 1000 起步，仅对照现货价格。</p></div>
+            <div><p id="comparison-range" class="reference-range">读取最新日期中…</p><h3>从历史参考接到最近采样</h3><p>Alt30、BTC 与 ETH 均从 2025-10-14 的 1000 起步，仅对照现货价格。</p></div>
             <div id="reference-legend" class="chart-legend" aria-label="曲线显隐控制"></div>
           </div>
-          <div class="reference-chart-holder chart-holder"><svg id="reference-chart" class="chart" viewBox="0 0 900 330" role="img" aria-label="LZ-Alt30 历史参考与 BTC、ETH 对照走势图"></svg><div id="reference-tooltip" class="chart-tooltip" hidden></div></div>
+          <div class="reference-chart-holder chart-holder"><svg id="reference-chart" class="chart" viewBox="0 0 900 330" role="img" aria-label="LZ-Alt30、BTC 与 ETH 的历史参考和正式续接对照走势图"></svg><div id="reference-tooltip" class="chart-tooltip" hidden></div></div>
           <div id="reference-stats" class="reference-stats"></div>
-          <p class="source-caption">按附件中的日度邻近报价计算；季度仅恢复等权，没有事后换币。历史参考窗口在正式基日结束。</p>
+          <p class="source-caption">统计栏是从 2025-10-14 共同起点到最近有效采样的对照变化。历史参考仍于 2026-10-13 截止，不会回填为正式业绩；2026-10-14 因报价不合格未发布点位。</p>
         </div>
       </section>
 

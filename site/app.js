@@ -36,7 +36,7 @@ function addText(parent, x, y, value, anchor = "start") {
   parent.append(node);
 }
 
-function renderChart(svg, tooltip, points, series, height = 330) {
+function renderChart(svg, tooltip, points, series, height = 330, options = {}) {
   svg.replaceChildren();
   if (!points.length || !series.length) return;
   const width = 900;
@@ -60,6 +60,15 @@ function renderChart(svg, tooltip, points, series, height = 330) {
   svg.append(svgEl("line", {x1: plot.left, y1: plot.bottom, x2: width - plot.right, y2: plot.bottom, class: "axis-line"}));
   const tickIndexes = [...new Set([0, 1, 2, 3, 4].map(index => Math.round((points.length - 1) * index / 4)))];
   for (const index of tickIndexes) addText(svg, xAt(index), height - 12, points[index].date.slice(5).replace("-", "/"), "middle");
+
+  if (options.phaseBoundaryDate) {
+    const boundary = points.findIndex(point => point.date === options.phaseBoundaryDate);
+    if (boundary >= 0 && boundary < points.length - 1) {
+      const x = xAt(boundary);
+      svg.append(svgEl("line", {x1: x, y1: plot.top, x2: x, y2: plot.bottom, class: "phase-divider"}));
+      addText(svg, x - 7, plot.top + 14, "正式起算", "end");
+    }
+  }
 
   for (const item of series) {
     const path = points.map((point, index) => `${index ? "L" : "M"}${xAt(index).toFixed(2)} ${yAt(point[item.key]).toFixed(2)}`).join(" ");
@@ -91,6 +100,7 @@ function renderChart(svg, tooltip, points, series, height = 330) {
     });
     tooltip.replaceChildren();
     tooltip.append(el("strong", "", points[index].date));
+    if (points[index].phase) tooltip.append(el("span", "tooltip-phase", points[index].phase === "reference" ? "历史回推参考" : "正式阶段 · 同起点对照值"));
     for (const item of series) tooltip.append(el("span", "", `${item.label}  ${formatPoint(points[index][item.key])}`));
     tooltip.hidden = false;
     tooltip.style.left = `${Math.max(70, Math.min(bounds.width - 70, x / width * bounds.width))}px`;
@@ -136,7 +146,8 @@ function renderOfficial(data) {
 }
 
 function renderReference(data) {
-  const definitions = [{key: "alt30", label: "Alt30 研究参考", color: COLORS.alt30}, {key: "btc", label: "BTC", color: COLORS.btc}, {key: "eth", label: "ETH", color: COLORS.eth}];
+  const definitions = [{key: "alt30", label: "LZ-Alt30", color: COLORS.alt30}, {key: "btc", label: "BTC", color: COLORS.btc}, {key: "eth", label: "ETH", color: COLORS.eth}];
+  $("comparison-range").textContent = `${data.meta.reference_start} — ${data.meta.latest_date}`;
   const legend = $("reference-legend");
   legend.replaceChildren();
   for (const item of definitions) {
@@ -153,10 +164,10 @@ function renderReference(data) {
     });
     legend.append(button);
   }
-  renderChart($("reference-chart"), $("reference-tooltip"), data.reference, definitions.filter(item => visibleReferenceSeries.has(item.key)));
+  renderChart($("reference-chart"), $("reference-tooltip"), data.comparison, definitions.filter(item => visibleReferenceSeries.has(item.key)), 330, {phaseBoundaryDate: data.meta.base_date});
   const stats = $("reference-stats");
   stats.replaceChildren();
-  const first = data.reference[0], last = data.reference.at(-1);
+  const first = data.comparison[0], last = data.comparison.at(-1);
   for (const item of definitions) {
     const box = el("div", `reference-stat ${item.key}`);
     box.append(el("span", "", item.label), el("strong", "", formatPercent((last[item.key] / first[item.key] - 1) * 100)));
@@ -256,7 +267,7 @@ async function start() {
     const response = await fetch(`./data/index.json?v=${Date.now()}`, {cache: "no-store"});
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
-    if (!data.official?.length || !data.reference?.length || data.constituents?.length !== 30) throw new Error("指数数据不完整");
+    if (!data.official?.length || !data.reference?.length || !data.comparison?.length || data.constituents?.length !== 30) throw new Error("指数数据不完整");
     state = data;
     renderOfficial(data);
     renderReference(data);
