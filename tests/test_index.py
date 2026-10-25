@@ -20,7 +20,7 @@ class IndexTests(unittest.TestCase):
         members = json.loads((ROOT / "data/constituents.json").read_text(encoding="utf-8"))
         ids = [member[0] for member in members]
         changes = json.loads((ROOT / "data/constituent_changes.json").read_text(encoding="utf-8"))
-        prices = read_ledger("daily_prices.csv")
+        prices = [row for row in read_ledger("daily_prices.csv") if row["date"] <= "2026-10-16"]
         values, holdings = calculate_with_state(prices, ids, changes, ["2026-10-14"])
         self.assertEqual([row["date"] for row in values[-3:]], ["2026-10-13", "2026-10-15", "2026-10-16"])
         self.assertEqual(values[-3]["LZ_Alt30_live"], 1000)
